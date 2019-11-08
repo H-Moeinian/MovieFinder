@@ -1,5 +1,6 @@
 package com.example.moviefinder
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -19,22 +20,19 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 class MainActivity : AppCompatActivity() {
 
     private val disposable = CompositeDisposable()
-    private lateinit var movieTitle: String
+    var myList = ArrayList<Search>()
+     lateinit var adapter: RecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setRecyclerView()
 
-        val searchElement = Search()
 
 
-        val list = ArrayList<Search>()
-        list.add(searchElement)
-        recyclerView.layoutManager =
-            LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        recyclerView.adapter = RecyclerViewAdapter(list)
+
 
         btnSearch.setOnClickListener {
-            movieTitle = this.edtMovieTitle.text.toString()
+            val movieTitle = this.edtMovieTitle.text.toString()
 
             disposable.add(
                 RetrofitProvider.provideRetrofit().getRelatedMovies(movieTitle)
@@ -42,9 +40,9 @@ class MainActivity : AppCompatActivity() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
                         {
-                            recyclerView.layoutManager =
-                                LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                            recyclerView.adapter = RecyclerViewAdapter(it.search)
+                            myList.clear()
+                            myList.addAll(it.search)
+                            adapter.notifyDataSetChanged()
 
 
                         },
@@ -55,6 +53,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun showPoster(poster: String) {
+        val intent = Intent(this@MainActivity, ShowMoviePosterActivity::class.java)
+        intent.putExtra("poster", poster)
+        startActivity(intent)
+    }
+
+    fun setRecyclerView() {
+        adapter = RecyclerViewAdapter(myList) { poster -> showPoster(poster) }
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager =
+            LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

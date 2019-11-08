@@ -1,6 +1,7 @@
 
 package com.example.moviefinder.MovieDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -9,7 +10,7 @@ public class MovieClass {
 
     @SerializedName("Search")
     @Expose
-    private List<Search> search = null;
+    private ArrayList<Search> search = null;
     @SerializedName("totalResults")
     @Expose
     private String totalResults;
@@ -17,11 +18,11 @@ public class MovieClass {
     @Expose
     private String response;
 
-    public List<Search> getSearch() {
+    public ArrayList<Search> getSearch() {
         return search;
     }
 
-    public void setSearch(List<Search> search) {
+    public void setSearch(ArrayList<Search> search) {
         this.search = search;
     }
 
